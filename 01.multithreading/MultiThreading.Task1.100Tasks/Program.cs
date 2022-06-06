@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace MultiThreading.Task1._100Tasks
 {
-    class Program
+    public class Program
     {
         const int TaskAmount = 100;
         const int MaxIterationsCount = 1000;
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Console.WriteLine(".Net Mentoring Program. Multi threading V1.");
             Console.WriteLine("1.	Write a program, which creates an array of 100 Tasks, runs them and waits all of them are not finished.");
@@ -26,7 +26,7 @@ namespace MultiThreading.Task1._100Tasks
             Console.ReadLine();
         }
 
-        static void HundredTasks()
+        private static void HundredTasks()
         {
             Task[] tasks = new Task[TaskAmount];
 			for (int i = 0; i < tasks.Length; i++)
@@ -38,7 +38,7 @@ namespace MultiThreading.Task1._100Tasks
             Task.WaitAll(tasks);
         }
 
-        static void GoIteration(int taskNumber)
+        private static void GoIteration(int taskNumber)
 		{
             for (int iterationStep = 1; iterationStep <= MaxIterationsCount; iterationStep++)
 			{
@@ -46,7 +46,7 @@ namespace MultiThreading.Task1._100Tasks
 			}
 		}
 
-        static void Output(int taskNumber, int iterationNumber)
+        private static void Output(int taskNumber, int iterationNumber)
         {
             Console.WriteLine($"Task #{taskNumber} – {iterationNumber}");
         }

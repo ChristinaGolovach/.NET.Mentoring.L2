@@ -8,8 +8,6 @@ namespace MultiThreading.Task3.MatrixMultiplier.Multipliers
 	{
 		public IMatrix Multiply(IMatrix m1, IMatrix m2)
 		{
-			ValidateMultiplyRule(m1, m2);
-
 			var resultMatrix = new Matrix(m1.RowCount, m2.ColCount);
 			Parallel.For(0, m1.RowCount, i =>
 			{
@@ -26,14 +24,6 @@ namespace MultiThreading.Task3.MatrixMultiplier.Multipliers
 			});
 
 			return resultMatrix;
-		}
-
-		private void ValidateMultiplyRule(IMatrix m1, IMatrix m2)
-		{
-			if (m1.ColCount != m2.RowCount)
-			{
-				throw new ArgumentException($"Column count of {nameof(m1)} is not equal to row count of {nameof(m2)}");
-			}
 		}
 	}
 }

@@ -60,7 +60,8 @@ namespace MultiThreading.Task6.Continuation
 				var token = src.Token;
 				src.Cancel();
 
-				return ParentTask(token).ContinueWith(ChildTask, TaskContinuationOptions.OnlyOnCanceled);
+				return ParentTask(token).ContinueWith((result) => Console.WriteLine(
+						$"Inner {nameof(ChildTask)} D is in thread pool: {Thread.CurrentThread.IsThreadPoolThread}."), TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.LongRunning);
 			}
 		}
 

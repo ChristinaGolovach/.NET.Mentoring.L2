@@ -11,56 +11,49 @@ using System.Threading.Tasks;
 
 namespace MultiThreading.Task5.Threads.SharedCollection
 {
-    class Program
-    {
+	class Program
+	{
 		private static int elementCount = 10;
-        private static List<int> sharedCollection = new List<int>();
-		private static object locker = new object();
+		private static List<int> sharedCollection = new List<int>();
 		private static AutoResetEvent readEvent = new AutoResetEvent(false);
-		private static AutoResetEvent writeEvent = new AutoResetEvent(false);
+		private static AutoResetEvent writeEvent = new AutoResetEvent(true);
 
 		static void Main(string[] args)
-        {
-            Console.WriteLine("5. Write a program which creates two threads and a shared collection:");
-            Console.WriteLine("the first one should add 10 elements into the collection and the second should print all elements in the collection after each adding.");
-            Console.WriteLine("Use Thread, ThreadPool or Task classes for thread creation and any kind of synchronization constructions.");
-            Console.WriteLine();
+		{
+			Console.WriteLine("5. Write a program which creates two threads and a shared collection:");
+			Console.WriteLine("the first one should add 10 elements into the collection and the second should print all elements in the collection after each adding.");
+			Console.WriteLine("Use Thread, ThreadPool or Task classes for thread creation and any kind of synchronization constructions.");
+			Console.WriteLine();
 
-			// feel free to add your code
-			Task addItems = Task.Run(() => AddItems());
+			//feel free to add your code
+			Task addItemsTask = Task.Run(() => AddItems());
+			Task.Run(() => PrintItems(addItemsTask));
 
 			Console.ReadLine();
-        }
+		}
 
 		private static void AddItems()
 		{
-			for (int i = 0; i <= elementCount; i++)
+			for (int i = 0; i < elementCount; i++)
 			{
-				Task printItems = Task.Run(() => PrintItems());
-
 				readEvent.WaitOne();
-
-				lock (locker)
-				{
-					sharedCollection.Add(i);
-				}
+				sharedCollection.Add(i);
 				Console.WriteLine($"item {i} has been added.");
 				writeEvent.Set();
 			}
 		}
 
-		private static void PrintItems()
+		private static void PrintItems(Task addItemsTask)
 		{
-			readEvent.Set();
-			writeEvent.WaitOne();
-
-			lock (locker)
+			while (!addItemsTask.IsCompleted)
 			{
-				foreach (var item in sharedCollection)
+				writeEvent.WaitOne();
+				for (int i = 0; i < sharedCollection.Count; i++)
 				{
-					Console.Write($"{item} ");
+					Console.Write($"{sharedCollection[i]} ");
 				}
 				Console.WriteLine();
+				readEvent.Set();
 			}
 		}
 	}

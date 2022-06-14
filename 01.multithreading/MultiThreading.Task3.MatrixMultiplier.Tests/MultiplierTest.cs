@@ -21,12 +21,13 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
 		{
 			int effectiveMatrixSize = 0;
 
+			var multiplier = new MatricesMultiplier();
+			var parallelMultiplier = new MatricesMultiplierParallel();
+
 			for (int i = 1; i < int.MaxValue; i++)
 			{
 				var m1 = new Matrix(i, i, true);
 				var m2 = new Matrix(i, i, true);
-				var multiplier = new MatricesMultiplier();
-				var parallelMultiplier = new MatricesMultiplierParallel();
 
 				Stopwatch regularApproachTime = new Stopwatch();
 				regularApproachTime.Start();
@@ -37,10 +38,11 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
 				parallelApproachTime.Start();
 				parallelMultiplier.Multiply(m1, m2);
 				parallelApproachTime.Stop();
-				
-				if (parallelApproachTime.ElapsedMilliseconds < regularApproachTime.ElapsedMilliseconds)
+
+				if (parallelApproachTime.ElapsedTicks < regularApproachTime.ElapsedTicks)
 				{
 					effectiveMatrixSize = i;
+					Console.WriteLine(effectiveMatrixSize);
 					break;
 				}
 			}

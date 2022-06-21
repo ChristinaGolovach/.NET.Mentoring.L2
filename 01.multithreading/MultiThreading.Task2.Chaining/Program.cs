@@ -6,6 +6,9 @@
  * Fourth Task – calculates the average value. All this tasks should print the values to console.
  */
 using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MultiThreading.Task2.Chaining
 {
@@ -21,9 +24,70 @@ namespace MultiThreading.Task2.Chaining
             Console.WriteLine("Fourth Task – calculates the average value. All this tasks should print the values to console");
             Console.WriteLine();
 
-            // feel free to add your code
+			Task arrayManipulation = Task.Run(() =>
+			{
+				var array = GetArray(10);
+				PrintArray(array);
+				return array;
+			}).ContinueWith(arrayResult =>
+			{
+				var array = Multiply(arrayResult.Result);
+				PrintArray(array);
+				return array;
+			}).ContinueWith(arrayResult =>
+			{
+				var array = arrayResult.Result;
+				Array.Sort(array);
+				PrintArray(array);
+				return array;
+			}).ContinueWith(arrayResult => Console.WriteLine(GetAvarage(arrayResult.Result)));
+
+			arrayManipulation.Wait();
 
             Console.ReadLine();
         }
+
+        private static int[] GetArray(int arraySize)
+		{
+            int[] array = new int[arraySize];
+            int minItemValue = 1;
+            int maxItemValue = 20;
+            var random = new Random();
+			for (int i = 0; i < array.Length; i++)
+			{
+                array[i] = random.Next(minItemValue, maxItemValue);
+			}
+
+            return array;
+		}
+
+		private static int[] Multiply(int[] array)
+		{
+            int minItemValue = 2;
+            int maxItemValue = 5;
+			var randomMultiplier = new Random().Next(minItemValue, maxItemValue);
+			for (int i = 0; i < array.Length; i++)
+			{
+				array[i] = array[i] * randomMultiplier;
+			}
+
+			return array;
+		}
+
+        private static double GetAvarage(int[] array)
+		{
+            return array.Average();
+		}
+
+		private static void PrintArray(int[] array)
+		{
+            var output = new StringBuilder();
+			for (int i = 0; i < array.Length; i++)
+			{
+                output.Append($"{array[i]}  ");
+			}
+
+            Console.WriteLine(output);
+		}
     }
 }

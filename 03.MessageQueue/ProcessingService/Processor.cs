@@ -11,34 +11,36 @@ namespace ProcessingService
 	{
 		private static string path = @"C:\D\Learn\FilesResult\";
 
-		public static void ProcessMessage(byte[] message)
+		public static void ProcessMessage(byte[] rawMessage)
 		{
-			var reciviedMessage = Serializer.Deserialize<Message>(message);
-			if (reciviedMessage.IsChunk)
+			var message = Serializer.Deserialize<Message>(rawMessage);
+			if (message.IsChunk)
 			{
-				ProcessChunk(reciviedMessage);
+				ProcessChunk(message, rawMessage);
 			}
 			else
 			{
-				var filePath = $"{path}{reciviedMessage.FileName}";
-				File.WriteAllBytes(filePath, reciviedMessage.Content);
+				var filePath = $"{path}{message.FileName}";
+				File.WriteAllBytes(filePath, message.Content);
 			}
 
-			Console.WriteLine($"Received file {reciviedMessage.FileName}");
+			Console.WriteLine($"Received file {message.FileName}");
 		}
 
-		private static void ProcessChunk(Message chunkMessage)
+		private static void ProcessChunk(Message chunkMessage, byte[] rawMessage)
 		{
-			if (!Directory.Exists($"{path}{chunkMessage.FileName}"))
-				Directory.CreateDirectory($"{path}{chunkMessage.FileName}");
+			var chunkPath = $"{path}chunks\\{chunkMessage.FileName}";
+
+			if (!Directory.Exists(chunkPath))
+			{
+				Directory.CreateDirectory(chunkPath);
+			}
+
+			File.WriteAllBytes($"{chunkPath}\\{chunkMessage.Order}", rawMessage);
 
 			if (chunkMessage.IsFinished)
 			{
-				CreateFileFromChunkes(chunkMessage, $"{path}{chunkMessage.FileName}");
-			}
-			else
-			{
-				File.WriteAllBytes($"{path}{chunkMessage.FileName}\\{chunkMessage.Order}", chunkMessage.Content);
+				CreateFileFromChunkes(chunkMessage, chunkPath);
 			}
 		}
 
@@ -67,8 +69,7 @@ namespace ProcessingService
 				content.AddRange(message.Content);
 			}
 
-			//var filePathResult = $"{path}{reciviedModel.FileName}.{reciviedModel.Type}";
-			var filePathResult = $"{path}{messages}";
+			var filePathResult = $"{path}{fileName}";
 
 			File.WriteAllBytes(filePathResult, content.ToArray());
 		}

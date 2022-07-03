@@ -6,8 +6,7 @@ namespace Common
 {
 	public static class Utils
 	{
-		
-		private const int ChunkSize = 10000;
+		private static readonly int chunkSize = 10000;
 
 		public static IList<T[]> GetChunks<T>(T[] importedSource)
 		{
@@ -16,14 +15,14 @@ namespace Common
 
 			while (true)
 			{
-				var chunk = importedSource.Skip(skip).Take(ChunkSize).ToArray();
+				var chunk = importedSource.Skip(skip).Take(chunkSize).ToArray();
 				if (chunk.Length == default(int))
 				{
 					break;
 				}
 
 				chunks.Add(chunk);
-				skip += ChunkSize;
+				skip += chunkSize;
 			}
 
 			return chunks;

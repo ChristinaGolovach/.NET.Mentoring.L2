@@ -28,7 +28,6 @@ namespace Common
 			IFormatter formatter = new BinaryFormatter();
 			using (MemoryStream stream = new MemoryStream(content))
 			{
-				//stream.Seek(0, SeekOrigin.Begin);
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
 				var objectModel = formatter.Deserialize(stream);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete

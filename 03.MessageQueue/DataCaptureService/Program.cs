@@ -11,9 +11,9 @@ namespace DataCaptureService
 	{
 		private static string sourceFolderName = @"C:\D\Learn\Files";
 		private static string backupFolderName = @"C:\D\Learn\FilesBackup\";
-		private static string fileFormat = "*.pdf";
+		private static string fileFormat = "*.docx";
 		private static string exchangeName = "document-exch";
-		private static int maxFileSizeByte = 1048576;
+		private static int maxFileSizeByte = 65;//1048576;
 		private static Guid ServiceId = Guid.NewGuid();
 
 		static async Task Main(string[] args)
@@ -35,7 +35,6 @@ namespace DataCaptureService
 						{
 							Id = ServiceId,
 							FileName = fileInfo.Name,
-							Type = fileInfo.Extension,
 							Content = contents
 						};
 
@@ -53,12 +52,10 @@ namespace DataCaptureService
 
 		private static void ProcessLargeFile(FileInfo fileInfo, byte[] contents)
 		{
-			var model = new Message()
+			var message = new Message()
 			{
 				Id = ServiceId,
 				FileName = fileInfo.Name,
-				Type = fileInfo.Extension,
-				Length = fileInfo.Length,
 				IsChunk = true
 			};
 
@@ -66,19 +63,19 @@ namespace DataCaptureService
 
 			foreach (var chunk in chunks)
 			{
-				model.Content = chunk;
-				model.Order++;
+				message.Content = chunk;
+				message.Order++;
 
-				if (chunks.Count == model.Order)
+				if (chunks.Count == message.Order)
 				{
-					model.IsFinished = true;
+					message.IsFinished = true;
 				}
 
-				SendFile(model);
+				SendFile(message);
 			}
 		}
 
-		private static void SendFile(Message model)
+		private static void SendFile(Message message)
 		{
 			var factory = new ConnectionFactory() { HostName = "localhost" };
 			using (var connection = factory.CreateConnection())
@@ -86,7 +83,7 @@ namespace DataCaptureService
 			{
 				channel.ExchangeDeclare(exchange: exchangeName, ExchangeType.Fanout, true);
 
-				var result = Serializer.Serialize(model);
+				var result = Serializer.Serialize(message);
 
 				channel.BasicPublish(exchange: exchangeName, routingKey: "", basicProperties: null, body: result);
 			}

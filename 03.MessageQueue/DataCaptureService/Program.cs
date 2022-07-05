@@ -46,7 +46,7 @@ namespace DataCaptureService
 					File.Move(filePath, $"{backupFolderName}{fileInfo.Name}", true);
 				}
 
-				await Task.Delay(2000);
+				await Task.Delay(2000); //FileSystemWatcher
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace DataCaptureService
 				IsChunk = true
 			};
 
-			var chunks = Utils.GetChunks(contents);
+			var chunks = Utils.GetChunks(contents); //think
 
 			foreach (var chunk in chunks)
 			{
@@ -77,7 +77,7 @@ namespace DataCaptureService
 
 		private static void SendFile(Message message)
 		{
-			var factory = new ConnectionFactory() { HostName = "localhost" };
+			var factory = new ConnectionFactory() { HostName = "localhost" }; //const
 			using (var connection = factory.CreateConnection())
 			using (var channel = connection.CreateModel())
 			{

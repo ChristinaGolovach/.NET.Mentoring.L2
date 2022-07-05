@@ -12,6 +12,7 @@ namespace ProcessingService
 
 		static void Main(string[] args)
 		{
+			// improve: move to separate project
 			var factory = new ConnectionFactory() { HostName = "localhost" };
 			using (var connection = factory.CreateConnection())
 			using (var channel = connection.CreateModel())
@@ -29,8 +30,6 @@ namespace ProcessingService
 				};
 
 				channel.BasicConsume(queue: queueName, true, consumer);
-
-				Console.ReadKey();
 			}
 		}
 	}

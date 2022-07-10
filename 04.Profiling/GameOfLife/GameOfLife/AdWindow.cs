@@ -39,13 +39,16 @@ namespace GameOfLife
 
         private void OnClick(object sender, MouseButtonEventArgs e)
         {
-            System.Diagnostics.Process.Start(link);
-            Close();
+            using (System.Diagnostics.Process.Start(link))
+			{
+                Close();
+			}
         }
         
         protected override void OnClosed(EventArgs e)
         {
-            //Unsubscribe();
+            Unsubscribe();
+            adTimer.Stop();
             base.OnClosed(e);
         } 
 

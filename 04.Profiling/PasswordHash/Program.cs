@@ -15,10 +15,18 @@ namespace PasswordHash
 		{
 			var password = "qwerty";
 			var salt = Encoding.ASCII.GetBytes("rm4fSDh0sofK6154");
-			GeneratePasswordHashUsingSalt(password, salt);
-			GeneratePasswordHashUsingSaltChangedVersion(password, salt);
+			for (int i = 0; i < 100; i++)
+			{
 
-			Console.ReadKey();
+				GeneratePasswordHashUsingSalt(password, salt);
+			}
+
+			for (int i = 0; i < 100; i++)
+			{
+
+				GeneratePasswordHashUsingSaltChangedVersion(password, salt);
+			}
+
 		}
 
 		public static string GeneratePasswordHashUsingSalt(string passwordText, byte[] salt)

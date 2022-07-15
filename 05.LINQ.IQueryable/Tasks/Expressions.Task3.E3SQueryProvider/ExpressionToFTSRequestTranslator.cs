@@ -3,24 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Expressions.Task3.E3SQueryProvider.Models.Translator;
 
 namespace Expressions.Task3.E3SQueryProvider
 {
 	public class ExpressionToFtsRequestTranslator : ExpressionVisitor
 	{
 		private readonly StringBuilder _resultStringBuilder;
-		private IDictionary<string, ValueTuple<string, string>> stringMethodBrackets;
+		private IDictionary<string, ValueTuple<string, string>> bracketNames;
 
 		public ExpressionToFtsRequestTranslator()
 		{
 			_resultStringBuilder = new StringBuilder();
 
-			stringMethodBrackets = new Dictionary<string, ValueTuple<string, string>>
+			bracketNames = new Dictionary<string, ValueTuple<string, string>>
 			{
-				{ "Equals", ("(", ")") },
-				{ "Contains", ("(*", "*)") },
-				{ "StartsWith", ("(", "*)") },
-				{ "EndsWith", ("(*", ")") },
+				{ BracketName.EqualsName, ("(", ")") },
+				{ BracketName.Contains, ("(*", "*)") },
+				{ BracketName.StartsWith, ("(", "*)") },
+				{ BracketName.EndsWith, ("(*", ")") },
+				{ BracketName.Default, ("(", ")") },
+				{ BracketName.AND, (BracketName.AND, string.Empty) }
 			};
 		}
 
@@ -43,9 +46,9 @@ namespace Expressions.Task3.E3SQueryProvider
 
 				return node;
 			}
-			if (node.Method.DeclaringType == typeof(string) && stringMethodBrackets.ContainsKey(node.Method.Name))
+			if (node.Method.DeclaringType == typeof(string) && bracketNames.ContainsKey(node.Method.Name))
 			{
-				VisitStringMethodCallNodes(node.Object, node.Arguments[0], node.Method.Name);
+				VisitQueryNodes(node.Object, node.Arguments[0], node.Method.Name);
 
 				return node;
 			}
@@ -58,15 +61,10 @@ namespace Expressions.Task3.E3SQueryProvider
 			switch (node.NodeType)
 			{
 				case ExpressionType.Equal:
-				HandleEqualQuery(node);
+					HandleEqualQuery(node);
 				break;
 				case ExpressionType.AndAlso:
-				var leftNode = node.Left;
-				var rightNode = node.Right;
-
-				Visit(leftNode);
-				Visit(rightNode);
-
+					VisitQueryNodes(node.Left, node.Right, BracketName.AND);
 				break;
 
 				default:
@@ -102,11 +100,11 @@ namespace Expressions.Task3.E3SQueryProvider
 
 			if (leftNode.NodeType == ExpressionType.MemberAccess)
 			{
-				VisitEqualQueryNodes(leftNode, rightNode);
+				VisitQueryNodes(leftNode, rightNode, BracketName.Default);
 			}
 			else
 			{
-				VisitEqualQueryNodes(rightNode, leftNode);
+				VisitQueryNodes(rightNode, leftNode, BracketName.Default);
 			}
 		}
 
@@ -119,17 +117,9 @@ namespace Expressions.Task3.E3SQueryProvider
 			}
 		}
 
-		private void VisitEqualQueryNodes(Expression firtsNode, Expression secondNode)
+		private void VisitQueryNodes(Expression firtsNode, Expression secondNode, string bracketName)
 		{
-			Visit(firtsNode);
-			_resultStringBuilder.Append("(");
-			Visit(secondNode);
-			_resultStringBuilder.Append(")");
-		}
-
-		private void VisitStringMethodCallNodes(Expression firtsNode, Expression secondNode, string MethodName)
-		{
-			var brackets = stringMethodBrackets[MethodName];
+			var brackets = bracketNames[bracketName];
 			Visit(firtsNode);
 			_resultStringBuilder.Append(brackets.Item1);
 			Visit(secondNode);

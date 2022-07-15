@@ -15,29 +15,28 @@ using Xunit;
 
 namespace Expressions.Task3.E3SQueryProvider.Test
 {
-    public class E3SAndOperatorSupportTests
-    {
-        #region SubTask 3: AND operator support
+	public class E3SAndOperatorSupportTests
+	{
+		#region SubTask 3: AND operator support
 
-        [Fact]
-        public void TestAndQueryable()
-        {
-            var translator = new ExpressionToFtsRequestTranslator();
-            Expression<Func<IQueryable<EmployeeEntity>, IQueryable<EmployeeEntity>>> expression
-                = query => query.Where(e => e.Workstation == "EPRUIZHW006" && e.Manager.StartsWith("John"));
-            /*
-             * The expression above should be converted to the following FTSQueryRequest and then serialized inside FTSRequestGenerator:
-             * "statements": [
-                { "query":"Workstation:(EPRUIZHW006)"},
-                { "query":"Manager:(John*)"}
-                // Operator between queries is AND, in other words result set will fit to both statements above
-              ],
-             */
+		[Fact]
+		public void TestAndQueryable()
+		{
+			var translator = new ExpressionToFtsRequestTranslator();
+			var generator = new FtsRequestGenerator("");
+			var expectedTranslated = "Workstation:(EPRUIZHW006) AND Manager:(John*)";
+			var expectedSerialized = @"{""statements"":[{""query"":""Workstation:(EPRUIZHW006)""},{""query"":""Manager:(John*)""}],""filters"":null,""sorting"":null,""start"":0,""limit"":10}";
 
-            // todo: create asserts for this test by yourself, because they will depend on your final implementation
-            throw new NotImplementedException("Please implement this test and the appropriate functionality");
-        }
+			Expression<Func<IQueryable<EmployeeEntity>, IQueryable<EmployeeEntity>>> expression
+				= query => query.Where(e => e.Workstation == "EPRUIZHW006" && e.Manager.StartsWith("John"));
 
-        #endregion
-    }
+			string translated = translator.Translate(expression);
+			var serialized = generator.SerializeFtpRequest(translated);
+
+			Assert.Equal(expectedTranslated, translated);
+			Assert.Equal(expectedSerialized, serialized);
+		}
+
+		#endregion
+	}
 }

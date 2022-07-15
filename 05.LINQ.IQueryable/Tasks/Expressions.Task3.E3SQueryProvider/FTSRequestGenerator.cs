@@ -1,9 +1,11 @@
 ﻿using Expressions.Task3.E3SQueryProvider.Attributes;
 using Expressions.Task3.E3SQueryProvider.Models.Request;
+using Expressions.Task3.E3SQueryProvider.Models.Translator;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Expressions.Task3.E3SQueryProvider
 {
@@ -32,19 +34,7 @@ namespace Expressions.Task3.E3SQueryProvider
         {
             string metaTypeName = GetMetaTypeName(type);
 
-            var ftsQueryRequest = new FtsQueryRequest
-            {
-                Statements = new List<Statement>
-                {
-                    new Statement {
-                        Query = query
-                    }
-                },
-                Start = start,
-                Limit = limit
-            };
-
-            var ftsQueryRequestString = JsonConvert.SerializeObject(ftsQueryRequest);
+			var ftsQueryRequestString = SerializeFtpRequest(query, start, limit);
 
             var uri = BindByName($"{_baseAddress}{_FTSSearchTemplate}",
                 new Dictionary<string, string>()
@@ -56,9 +46,26 @@ namespace Expressions.Task3.E3SQueryProvider
             return uri;
         }
 
-        #endregion
+		public string SerializeFtpRequest(string query = "*", int start = 0, int limit = 10)
+		{
+			var splitedQueries = query.Split(BracketName.AND);
+			List<Statement> statements = splitedQueries.Select(q => new Statement { Query = q }).ToList(); ;
 
-        private static Uri BindByName(string baseAddress, Dictionary<string, string> queryParams)
+			var ftsQueryRequest = new FtsQueryRequest
+			{
+				Statements = statements,
+				Start = start,
+				Limit = limit
+			};
+
+			var ftsQueryRequestString = JsonConvert.SerializeObject(ftsQueryRequest);
+
+			return ftsQueryRequestString;
+		}
+
+		#endregion
+
+		private static Uri BindByName(string baseAddress, Dictionary<string, string> queryParams)
             => new Uri(QueryHelpers.AddQueryString(baseAddress, queryParams));
 
         private static string GetMetaTypeName(Type type)

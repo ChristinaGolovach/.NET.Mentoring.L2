@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.32510.428
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GOF.Adapter", "GOF.Adapter.csproj", "{7CDB72CB-AF13-46A3-BEED-EA4093B4C5DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Composite", "..\Composite\Composite.csproj", "{5F13F7C2-21B9-4DFB-9143-439A46FD7918}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Composite", "..\Composite\Composite.csproj", "{5F13F7C2-21B9-4DFB-9143-439A46FD7918}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Facade", "..\Facade\Facade.csproj", "{B64EEA00-DF60-4863-B496-1D9A9107734F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{5F13F7C2-21B9-4DFB-9143-439A46FD7918}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F13F7C2-21B9-4DFB-9143-439A46FD7918}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F13F7C2-21B9-4DFB-9143-439A46FD7918}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B64EEA00-DF60-4863-B496-1D9A9107734F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B64EEA00-DF60-4863-B496-1D9A9107734F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B64EEA00-DF60-4863-B496-1D9A9107734F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B64EEA00-DF60-4863-B496-1D9A9107734F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
